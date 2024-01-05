@@ -3,7 +3,8 @@
     import { page } from "$app/stores";
     import Post from "./[id]/+page.svelte";
 
-    $: console.log($page.state.id);
+    $: console.log($page.state);
+    $: console.log($page.params);
 
     async function openPost(e: MouseEvent, id: number) {
         if (e.metaKey) return;
