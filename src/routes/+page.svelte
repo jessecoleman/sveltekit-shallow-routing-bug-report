@@ -1,32 +1,24 @@
 <script lang="ts">
-    import { goto, preloadData, pushState } from "$app/navigation";
-    import { page } from "$app/stores";
-    import Post from "./[id]/+page.svelte";
+  import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import Example from "../components/Example.svelte";
 
-    $: console.log($page.state);
-    $: console.log($page.params);
+  $: console.log($page.state);
+  $: console.log($page.params);
 
-    async function openPost(e: MouseEvent, id: number) {
-        if (e.metaKey) return;
+  export let data;
 
-        e.preventDefault();
-
-        const { href } = e.currentTarget as HTMLAnchorElement;
-
-        const result = await preloadData(href);
-
-        if (result.type === "loaded" && result.status === 200) {
-            pushState(href, { id });
-        } else {
-            goto(href);
-        }
-    }
+  // this is a workaround for the <=2.5.0 bug being discussed
+  // avoids calling pushState before $page is initialized
+  let mounted = false;
+  
+  onMount(() => {
+    mounted = true;
+  });
 </script>
 
-<a href="/{1}" on:click={(e) => openPost(e, 1)}>Open Post 1</a>
-<a href="/{2}" on:click={(e) => openPost(e, 2)}>Open Post 2</a>
-<a href="/{3}" on:click={(e) => openPost(e, 3)}>Open Post 3</a>
-
-{#if $page.state.id}
-    <Post id={$page.state.id} />
+{#if mounted}
+  <Example />
+  loaded: {data.loaded}
+  id: {$page.state.id};
 {/if}
